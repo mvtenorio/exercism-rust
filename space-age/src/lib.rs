@@ -15,50 +15,23 @@ pub trait Planet {
     fn years_during(d: &Duration) -> f64;
 }
 
-#[derive(Planet)]
-pub struct Earth;
-impl Earth {
-    const ORBITAL_PERIOD: f64 = 31_557_600.0;
+const EARTH_ORBITAL_PERIOD: f64 = 31_557_600.0;
+
+macro_rules! def_planet {
+    ($x: ident, $v: literal) => {
+        #[derive(Planet)]
+        pub struct $x;
+        impl $x {
+            const ORBITAL_PERIOD: f64 = EARTH_ORBITAL_PERIOD * ($v);
+        }
+    };
 }
 
-#[derive(Planet)]
-pub struct Mercury;
-impl Mercury {
-    const ORBITAL_PERIOD: f64 = 0.2408467 * Earth::ORBITAL_PERIOD;
-}
-
-#[derive(Planet)]
-pub struct Venus;
-impl Venus {
-    const ORBITAL_PERIOD: f64 = 0.61519726 * Earth::ORBITAL_PERIOD;
-}
-
-#[derive(Planet)]
-pub struct Mars;
-impl Mars {
-    const ORBITAL_PERIOD: f64 = 1.8808158 * Earth::ORBITAL_PERIOD;
-}
-
-#[derive(Planet)]
-pub struct Jupiter;
-impl Jupiter {
-    const ORBITAL_PERIOD: f64 = 11.862615 * Earth::ORBITAL_PERIOD;
-}
-
-#[derive(Planet)]
-pub struct Saturn;
-impl Saturn {
-    const ORBITAL_PERIOD: f64 = 29.447498 * Earth::ORBITAL_PERIOD;
-}
-
-#[derive(Planet)]
-pub struct Uranus;
-impl Uranus {
-    const ORBITAL_PERIOD: f64 = 84.016846 * Earth::ORBITAL_PERIOD;
-}
-
-#[derive(Planet)]
-pub struct Neptune;
-impl Neptune {
-    const ORBITAL_PERIOD: f64 = 164.79132 * Earth::ORBITAL_PERIOD;
-}
+def_planet!(Earth, 1.0);
+def_planet!(Mercury, 0.2408467);
+def_planet!(Venus, 0.61519726);
+def_planet!(Mars, 1.8808158);
+def_planet!(Jupiter, 11.862615);
+def_planet!(Saturn, 29.447498);
+def_planet!(Uranus, 84.016846);
+def_planet!(Neptune, 164.79132);
