@@ -17,14 +17,14 @@ impl<'a> HighScores<'a> {
     }
 
     pub fn personal_best(&self) -> Option<u32> {
-        let mut c: Vec<u32> = self.scores.iter().copied().collect();
-        c.sort_unstable();
-        c.last().copied()
+        self.scores.iter().max().copied()
     }
 
     pub fn personal_top_three(&self) -> Vec<u32> {
-        let mut c: Vec<u32> = self.scores.iter().copied().collect();
-        c.sort_unstable();
-        c.iter().rev().take(3).copied().collect()
+        let mut result: Vec<u32> = self.scores.to_vec();
+        result.sort_unstable_by(|a, b| b.cmp(a));
+        result.truncate(3);
+
+        result
     }
 }
