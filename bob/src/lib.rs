@@ -19,44 +19,26 @@ impl Sentence {
     }
 
     fn kind(&self) -> SentenceKind {
-        if self.message.is_empty() {
-            return SentenceKind::Silence;
+        match self.message {
+            m if m.is_empty() => SentenceKind::Silence,
+            _ if self.is_impolite_question() => SentenceKind::ImpoliteQuestion,
+            _ if self.is_polite_question() => SentenceKind::PoliteQuestion,
+            _ if self.is_yell() => SentenceKind::Yell,
+            _ => SentenceKind::Other,
         }
-
-        if self.is_inpolite_question() {
-            return SentenceKind::ImpoliteQuestion;
-        }
-
-        if self.is_polite_question() {
-            return SentenceKind::PoliteQuestion;
-        }
-
-        if self.is_yell() {
-            return SentenceKind::Yell;
-        }
-
-        SentenceKind::Other
     }
 
-    fn is_inpolite_question(self) -> bool {
-        self.message.chars().any(|c| c.is_alphabetic())
-            && self
-                .message
-                .chars()
-                .all(|c| !c.is_alphabetic() || c.is_uppercase())
-            && self.message.chars().last().unwrap() == '?'
+    fn is_impolite_question(self) -> bool {
+        self.message.ends_with("?") && self.is_yell()
     }
 
     fn is_polite_question(self) -> bool {
-        self.message.chars().last().unwrap() == '?'
+        self.message.ends_with("?")
     }
 
     fn is_yell(self) -> bool {
-        self.message.chars().any(|c| c.is_alphabetic())
-            && self
-                .message
-                .chars()
-                .all(|c| !c.is_alphabetic() || c.is_uppercase())
+        self.message.to_uppercase() == self.message
+            && self.message.chars().any(|c| c.is_alphabetic())
     }
 }
 
