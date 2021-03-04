@@ -1,11 +1,3 @@
-enum SentenceKind {
-    Silence,
-    Yell,
-    ImpoliteQuestion,
-    PoliteQuestion,
-    Other,
-}
-
 #[derive(Copy, Clone)]
 struct Sentence {
     message: &'static str,
@@ -18,13 +10,13 @@ impl Sentence {
         }
     }
 
-    fn kind(&self) -> SentenceKind {
+    fn reply(&self) -> &'static str {
         match self.message {
-            m if m.is_empty() => SentenceKind::Silence,
-            _ if self.is_impolite_question() => SentenceKind::ImpoliteQuestion,
-            _ if self.is_polite_question() => SentenceKind::PoliteQuestion,
-            _ if self.is_yell() => SentenceKind::Yell,
-            _ => SentenceKind::Other,
+            m if m.is_empty() => "Fine. Be that way!",
+            _ if self.is_impolite_question() => "Calm down, I know what I'm doing!",
+            _ if self.is_polite_question() => "Sure.",
+            _ if self.is_yell() => "Whoa, chill out!",
+            _ => "Whatever.",
         }
     }
 
@@ -44,12 +36,5 @@ impl Sentence {
 
 pub fn reply(message: &'static str) -> &str {
     let sentence = Sentence::new(message);
-
-    match sentence.kind() {
-        SentenceKind::Silence => "Fine. Be that way!",
-        SentenceKind::ImpoliteQuestion => "Calm down, I know what I'm doing!",
-        SentenceKind::PoliteQuestion => "Sure.",
-        SentenceKind::Yell => "Whoa, chill out!",
-        SentenceKind::Other => "Whatever.",
-    }
+    sentence.reply()
 }
