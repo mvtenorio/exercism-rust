@@ -16,8 +16,8 @@ pub fn attrs_derive(input: TokenStream) -> TokenStream {
 fn impl_attrs(ast: &syn::DeriveInput) -> TokenStream {
     let name = &ast.ident;
     let gen = quote! {
-        impl #name {
-            pub fn with_attrs(self, attrs: &[(&'static str, &'static str)]) -> Self {
+        impl Attrs for #name {
+            fn with_attrs(self, attrs: &[(&'static str, &'static str)]) -> Self {
                 #name {
                     attrs: attrs
                         .iter()
@@ -26,8 +26,11 @@ fn impl_attrs(ast: &syn::DeriveInput) -> TokenStream {
                     ..self
                 }
             }
+
+            fn get_attr(&self, name: &str) -> Option<&str> {
+                self.attrs.get(name).map(|s| s.as_str())
+            }
         }
     };
     gen.into()
 }
-
