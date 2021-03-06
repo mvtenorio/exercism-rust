@@ -1,49 +1,48 @@
 pub mod graph {
     use std::collections::HashMap;
-    use std::iter::FromIterator;
 
+    use attrs_derive::Attrs;
+
+    use graph_items::{edge::Edge, node::Node};
+
+    #[derive(Default, Attrs)]
     pub struct Graph {
-        pub nodes: Vec<graph_items::node::Node>,
-        pub edges: Vec<graph_items::edge::Edge>,
+        pub nodes: Vec<Node>,
+        pub edges: Vec<Edge>,
         pub attrs: HashMap<String, String>,
     }
 
     impl Graph {
         pub fn new() -> Self {
+            Graph::default()
+        }
+
+        pub fn with_nodes(self, nodes: &[Node]) -> Self {
             Graph {
-                nodes: vec![],
-                edges: vec![],
-                attrs: HashMap::new(),
+                nodes: nodes.to_vec(),
+                ..self
             }
         }
 
-        pub fn with_nodes(mut self, nodes: &[graph_items::node::Node]) -> Self {
-            self.nodes = nodes.to_owned();
-            self
+        pub fn with_edges(self, edges: &[Edge]) -> Self {
+            Graph {
+                edges: edges.to_vec(),
+                ..self
+            }
         }
 
-        pub fn with_edges(mut self, edges: &[graph_items::edge::Edge]) -> Self {
-            self.edges = edges.to_owned();
-            self
-        }
-
-        pub fn with_attrs(mut self, attrs: &[(&'static str, &'static str)]) -> Self {
-            self.attrs =
-                HashMap::from_iter(attrs.iter().map(|(a, b)| (a.to_string(), b.to_string())));
-            self
-        }
-
-        pub fn get_node(self, name: &str) -> Option<graph_items::node::Node> {
-            self.nodes.iter().cloned().find(|n| n.name == name)
+        pub fn get_node(self, name: &str) -> Option<Node> {
+            self.nodes.iter().find(|n| n.name == name).cloned()
         }
     }
 
     pub mod graph_items {
         pub mod edge {
-            use std::collections::HashMap;
-            use std::iter::FromIterator;
+            use attrs_derive::Attrs;
 
-            #[derive(Debug, Clone, Eq, PartialEq)]
+            use std::collections::HashMap;
+
+            #[derive(Attrs, Debug, Clone, Eq, PartialEq)]
             pub struct Edge {
                 a: &'static str,
                 b: &'static str,
@@ -58,23 +57,17 @@ pub mod graph {
                         attrs: HashMap::new(),
                     }
                 }
-
-                pub fn with_attrs(mut self, attrs: &[(&'static str, &'static str)]) -> Self {
-                    self.attrs = HashMap::from_iter(
-                        attrs.iter().map(|(a, b)| (a.to_string(), b.to_string())),
-                    );
-                    self
-                }
             }
         }
         pub mod node {
-            use std::collections::HashMap;
-            use std::iter::FromIterator;
+            use attrs_derive::Attrs;
 
-            #[derive(Debug, Clone, Eq, PartialEq)]
+            use std::collections::HashMap;
+
+            #[derive(Attrs, Debug, Clone, Eq, PartialEq)]
             pub struct Node {
                 pub name: &'static str,
-                attrs: HashMap<&'static str, &'static str>,
+                attrs: HashMap<String, String>,
             }
 
             impl Node {
@@ -85,13 +78,8 @@ pub mod graph {
                     }
                 }
 
-                pub fn with_attrs(mut self, attrs: &[(&'static str, &'static str)]) -> Self {
-                    self.attrs = HashMap::from_iter(attrs.to_owned());
-                    self
-                }
-
-                pub fn get_attr(self, name: &str) -> Option<&str> {
-                    self.attrs.get(name).cloned()
+                pub fn get_attr(&self, name: &str) -> Option<&str> {
+                    self.attrs.get(name).map(|s| s.as_str())
                 }
             }
         }
